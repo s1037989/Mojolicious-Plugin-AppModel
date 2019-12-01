@@ -6,7 +6,7 @@ use ExtUtils::MakeMaker;
 WriteMakefile(
   NAME         => 'Mojolicious::Plugin::AppModel',
   VERSION_FROM => 'lib/Mojolicious/Plugin/AppModel.pm',
-  ABSTRACT     => 'A Developer's starter model for Mojolicious Apps',
+  ABSTRACT     => 'A Developer\'s starter model for Mojolicious Apps',
   AUTHOR       => 'Stefan Adams <sadams@cpan.org>',
   LICENSE      => 'artistic_2',
   META_MERGE   => {
@@ -28,7 +28,10 @@ WriteMakefile(
       x_IRC => 'irc://irc.freenode.net/#mojo'
     },
   },
-  PREREQ_PM    => {'Mojolicious' => '8.26'},
+  PREREQ_PM    => {
+    'Mojolicious'  => '8.26',
+    'Mojo::SQLite' => '3.00',
+  },
   #EXE_FILES    => ['script/*'],
   test         => {TESTS => 't/*.t'}
 );
