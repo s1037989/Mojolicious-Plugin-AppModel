@@ -57,29 +57,7 @@ sub _autoload {
   return unless $self->app->mode eq 'development';
   my $eval = <<'EOF';
 package $module;
-use Mojo::Base -base;
-
-use Mojo::JSON 'j';
-
-has 'backend';
-
-sub add {
-  my $self = shift;
-  $self->backend->log->debug('add $module');
-  $self->backend->db->insert('posts', {doc => j(shift)})->last_insert_id;
-}
-
-sub all {
-  my $self = shift;
-  $self->backend->log->debug('all $module');
-  $self->backend->db->select('uploads')->hashes->to_array;
-}
-
-sub get {
-  my $self = shift;
-  $self->backend->log->debug('get $module');
-  $self->backend->db->select('posts', ['doc'], {id => shift})->expand(json => 'doc')->hash->{doc};
-}
+use Mojo::Base 'Mojolicious::Plugin::AppModel::BaseModel';
 
 sub AUTOLOAD {
   my $self = shift;
@@ -150,6 +128,31 @@ sub _level1_sqlite {
   my ($self, $name) = @_;
   $self->app->backend->migrations->{migrations}->{up}  ->{1} = qq(create table $name (id integer primary key autoincrement, doc json););
   $self->app->backend->migrations->{migrations}->{down}->{1} = qq(drop table $name;);
+}
+
+package Mojolicious::Plugin::AppModel::BaseModel;
+use Mojo::Base -base;
+
+use Mojo::JSON 'j';
+
+has 'backend';
+
+sub add {
+  my $self = shift;
+  $self->backend->log->debug('add $module');
+  $self->backend->db->insert('posts', {doc => j(shift)})->last_insert_id;
+}
+
+sub all {
+  my $self = shift;
+  $self->backend->log->debug('all $module');
+  $self->backend->db->select('uploads')->hashes->to_array;
+}
+
+sub get {
+  my $self = shift;
+  $self->backend->log->debug('get $module');
+  $self->backend->db->select('posts', ['doc'], {id => shift})->expand(json => 'doc')->hash->{doc};
 }
 
 1;
