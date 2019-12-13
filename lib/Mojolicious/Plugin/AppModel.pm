@@ -59,6 +59,8 @@ sub _autoload {
 package $module;
 use Mojo::Base 'Mojolicious::Plugin::AppModel::BaseModel';
 
+has table => sub { Mojolicious::Plugin::AppModel::Util::model_name('$module') };
+
 sub AUTOLOAD {
   my $self = shift;
 
@@ -139,20 +141,23 @@ has 'backend';
 
 sub add {
   my $self = shift;
-  $self->backend->log->debug('add $module');
-  $self->backend->db->insert('posts', {doc => j(shift)})->last_insert_id;
+  my $table = $self->table;
+  $self->backend->log->debug("add $table");
+  $self->backend->db->insert($table, {doc => j(shift)})->last_insert_id;
 }
 
 sub all {
   my $self = shift;
-  $self->backend->log->debug('all $module');
-  $self->backend->db->select('uploads')->hashes->to_array;
+  my $table = $self->table;
+  $self->backend->log->debug("all $table");
+  $self->backend->db->select($table)->hashes->to_array;
 }
 
 sub get {
   my $self = shift;
-  $self->backend->log->debug('get $module');
-  $self->backend->db->select('posts', ['doc'], {id => shift})->expand(json => 'doc')->hash->{doc};
+  my $table = $self->table;
+  $self->backend->log->debug("get $table");
+  $self->backend->db->select($table, ['doc'], {id => shift})->expand(json => 'doc')->hash->{doc};
 }
 
 1;
